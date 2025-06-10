@@ -3,13 +3,18 @@
     "name": "Brutal Site Blocker",
     "version": "1.0",
     "description": "Blocks websites you shouldn't be on. No mercy.",
-    "permissions": ["storage", "webRequest", "webRequestBlocking", "declarativeNetRequest"],
-    "host_permissions": ["<all_urls>"],
+    "permissions": [
+        "storage",
+        "declarativeNetRequest"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
     "background": {
-      "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "action": {
-      "default_popup": "popup.html"
+        "default_popup": "popup.html"
     }
-  }
+}
   
