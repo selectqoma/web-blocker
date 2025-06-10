@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Website Blocker</title>
+    <style>
+      body {
+        width: 300px;
+        padding: 15px;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        padding: 8px 16px;
+        background-color: #ff4444;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #cc0000;
+      }
+      .blocked-sites {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>Website Blocker</h3>
+      <input id="url" placeholder="Enter domain to block (e.g., example.com)" />
+      <button id="blockBtn">Block Site</button>
+      <div class="blocked-sites">
+        <p>Default blocked sites:</p>
+        <ul>
+          <li>LinkedIn</li>
+          <li>Hotmail</li>
+          <li>Gmail</li>
+          <li>Instagram</li>
+        </ul>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

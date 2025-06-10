@@ -1,0 +1,15 @@
+{
+    "manifest_version": 3,
+    "name": "Brutal Site Blocker",
+    "version": "1.0",
+    "description": "Blocks websites you shouldn't be on. No mercy.",
+    "permissions": ["storage", "webRequest", "webRequestBlocking", "declarativeNetRequest"],
+    "host_permissions": ["<all_urls>"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+  
