@@ -114,4 +114,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+// Support Node.js testing by exporting functions
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    buildRules,
+    addSite,
+    removeSite,
+    loadStoredSites,
+    defaultBlockedSites,
+    STORAGE_KEY,
+    NEXT_ID_KEY
+  };
+}
   

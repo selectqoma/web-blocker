@@ -1,0 +1,8 @@
+{
+  "name": "web-blocker",
+  "version": "1.0.0",
+  "description": "Brutal Site Blocker tests",
+  "scripts": {
+    "test": "node --test"
+  }
+}
