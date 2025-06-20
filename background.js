@@ -6,26 +6,98 @@ const defaultBlockedSites = [
   'instagram.com'
 ];
 
-// Initialize default blocked sites
-function initializeDefaultSites() {
-  const rules = defaultBlockedSites.map((domain, index) => ({
-    id: index + 1,
+const STORAGE_KEY = 'blockedSites';
+
+/**
+ * Build and apply dynamic rules for all sites.
+ * @param {Array<{id:number,domain:string}>} sites
+ */
+async function buildRules(sites) {
+  const rules = sites.map(site => ({
+    id: site.id,
     priority: 1,
-    action: { type: "block" },
+    action: { type: 'block' },
     condition: {
-      urlFilter: domain,
-      resourceTypes: ["main_frame"]
+      urlFilter: site.domain,
+      resourceTypes: ['main_frame']
     }
   }));
 
-  chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: rules.map(rule => rule.id),
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: rules.map(r => r.id),
     addRules: rules
   });
 }
 
-// Initialize when extension is installed or updated
-chrome.runtime.onInstalled.addListener(() => {
-  initializeDefaultSites();
+/**
+ * Add a domain to storage and create a dynamic rule for it.
+ * @param {string} domain
+ */
+async function addSite(domain) {
+  const result = await chrome.storage.local.get(STORAGE_KEY);
+  const sites = result[STORAGE_KEY] || [];
+  const id = Date.now();
+  sites.push({ id, domain });
+  await chrome.storage.local.set({ [STORAGE_KEY]: sites });
+
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    addRules: [{
+      id,
+      priority: 1,
+      action: { type: 'block' },
+      condition: {
+        urlFilter: domain,
+        resourceTypes: ['main_frame']
+      }
+    }]
+  });
+}
+
+/**
+ * Remove a site by rule id from storage and dynamic rules.
+ * @param {number} id
+ */
+async function removeSite(id) {
+  const result = await chrome.storage.local.get(STORAGE_KEY);
+  const sites = (result[STORAGE_KEY] || []).filter(site => site.id !== id);
+  await chrome.storage.local.set({ [STORAGE_KEY]: sites });
+  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: [id] });
+}
+
+/**
+ * Load stored sites and rebuild all rules.
+ */
+async function loadStoredSites() {
+  const result = await chrome.storage.local.get(STORAGE_KEY);
+  const sites = result[STORAGE_KEY];
+  if (Array.isArray(sites) && sites.length) {
+    await buildRules(sites);
+  }
+}
+
+// Initialize when extension is installed
+chrome.runtime.onInstalled.addListener(async () => {
+  const initialSites = defaultBlockedSites.map((domain, index) => ({
+    id: index + 1,
+    domain
+  }));
+  await chrome.storage.local.set({ [STORAGE_KEY]: initialSites });
+  await buildRules(initialSites);
+});
+
+// Rebuild rules on startup and when the service worker loads
+chrome.runtime.onStartup.addListener(loadStoredSites);
+loadStoredSites();
+
+// Expose helper functions via message passing
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'addSite') {
+    addSite(message.domain).then(() => sendResponse({ success: true }));
+    return true;
+  }
+  if (message.action === 'removeSite') {
+    removeSite(message.id).then(() => sendResponse({ success: true }));
+    return true;
+  }
 });
   
