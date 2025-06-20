@@ -7,6 +7,7 @@ const defaultBlockedSites = [
 ];
 
 const STORAGE_KEY = 'blockedSites';
+const NEXT_ID_KEY = 'nextRuleId';
 
 /**
  * Build and apply dynamic rules for all sites.
@@ -34,11 +35,15 @@ async function buildRules(sites) {
  * @param {string} domain
  */
 async function addSite(domain) {
-  const result = await chrome.storage.local.get(STORAGE_KEY);
+  const result = await chrome.storage.local.get([STORAGE_KEY, NEXT_ID_KEY]);
   const sites = result[STORAGE_KEY] || [];
-  const id = Date.now();
+  let nextId = result[NEXT_ID_KEY] || 1;
+  const id = nextId++;
   sites.push({ id, domain });
-  await chrome.storage.local.set({ [STORAGE_KEY]: sites });
+  await chrome.storage.local.set({
+    [STORAGE_KEY]: sites,
+    [NEXT_ID_KEY]: nextId
+  });
 
   await chrome.declarativeNetRequest.updateDynamicRules({
     addRules: [{
@@ -68,10 +73,16 @@ async function removeSite(id) {
  * Load stored sites and rebuild all rules.
  */
 async function loadStoredSites() {
-  const result = await chrome.storage.local.get(STORAGE_KEY);
+  const result = await chrome.storage.local.get([STORAGE_KEY, NEXT_ID_KEY]);
   const sites = result[STORAGE_KEY];
   if (Array.isArray(sites) && sites.length) {
     await buildRules(sites);
+    if (typeof result[NEXT_ID_KEY] !== 'number') {
+      const maxId = Math.max(...sites.map(s => s.id));
+      await chrome.storage.local.set({ [NEXT_ID_KEY]: maxId + 1 });
+    }
+  } else if (typeof result[NEXT_ID_KEY] !== 'number') {
+    await chrome.storage.local.set({ [NEXT_ID_KEY]: 1 });
   }
 }
 
@@ -81,7 +92,10 @@ chrome.runtime.onInstalled.addListener(async () => {
     id: index + 1,
     domain
   }));
-  await chrome.storage.local.set({ [STORAGE_KEY]: initialSites });
+  await chrome.storage.local.set({
+    [STORAGE_KEY]: initialSites,
+    [NEXT_ID_KEY]: initialSites.length + 1
+  });
   await buildRules(initialSites);
 });
 
