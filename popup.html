@@ -34,6 +34,16 @@
         font-size: 12px;
         color: #666;
       }
+      #blockedList {
+        list-style-type: none;
+        padding: 0;
+      }
+      #blockedList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+      }
     </style>
   </head>
   <body>
@@ -42,13 +52,8 @@
       <input id="url" placeholder="Enter domain to block (e.g., example.com)" />
       <button id="blockBtn">Block Site</button>
       <div class="blocked-sites">
-        <p>Default blocked sites:</p>
-        <ul>
-          <li>LinkedIn</li>
-          <li>Hotmail</li>
-          <li>Gmail</li>
-          <li>Instagram</li>
-        </ul>
+        <p>Blocked sites:</p>
+        <ul id="blockedList"></ul>
       </div>
     </div>
     <script src="popup.js"></script>
