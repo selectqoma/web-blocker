@@ -34,19 +34,3 @@ manifest.json   - extension manifest (v3)
 popup.html      - popup interface
 popup.js        - logic for adding/removing sites in the popup
 ```
-
-## Contributing
-
-Pull requests are welcome. Please keep contributions focused and include clear commit messages. If you add new features, consider updating the documentation as well.
-
-## Publishing to the Chrome Web Store
-
-You can distribute this extension publicly through the Chrome Web Store. The basic
-steps are:
-
-1. Create a developer account at <https://chrome.google.com/webstore/developer> and pay the one-time registration fee.
-2. In the Developer Dashboard, click **Add new item** and upload the contents of this repository as a zip file.
-3. Fill out the required listing information (name, description, screenshots, etc.).
-4. Submit the extension for review. Once approved it will be available in the store.
-
-Refer to Google's official [Chrome Web Store documentation](https://developer.chrome.com/docs/webstore/publish/) for detailed instructions and policies.
